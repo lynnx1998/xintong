@@ -61,6 +61,8 @@ const appearances = (await getCollection('appearances'))
         alt={SITE.author}
         width={400}
         height={400}
+        widths={[200, 400, 800]}
+        sizes="(max-width: 640px) 200px, 400px"
         loading="eager"
         class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-out scale-105 hover:scale-100"
       />
@@ -148,12 +150,12 @@ const appearances = (await getCollection('appearances'))
                     <div class="flex flex-wrap gap-1.5 mb-3">
                       {project.data.types.map((type) => (
                         <span
-                          class={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wide ${
+                          class={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide ${
                             type === 'commercial'
                               ? 'bg-primary/10 text-primary border border-primary/20'
                               : type === 'open-source'
-                                ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20'
-                                : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                                ? 'bg-emerald-600/10 text-emerald-900 dark:text-emerald-400 border border-emerald-600/20'
+                                : 'bg-indigo-600/10 text-indigo-900 dark:text-indigo-400 border border-indigo-600/20'
                           }`}
                         >
                           {type === 'open-source' ? 'Open Source' : type}
@@ -262,7 +264,7 @@ const appearances = (await getCollection('appearances'))
                   {item.data.title}
                 </span>
               </div>
-              <span class="text-[11px] sm:text-xs font-medium text-muted-foreground tabular-nums">
+              <span class="text-xs font-medium text-muted-foreground tabular-nums">
                 {item.data.date.getFullYear()}
               </span>
             </a>

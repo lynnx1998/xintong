@@ -10,6 +10,11 @@ import JsonLd from '@/components/JsonLd.astro';
 import { getWebSiteSchema, getOrganizationSchema, getPersonSchema } from '@/lib/schemas';
 import LoadingIndicator from 'astro-loading-indicator/component';
 
+// Preload fonts to break critical request chains
+import outfitFont400 from '@fontsource/outfit/files/outfit-latin-400-normal.woff2?url';
+import outfitFont700 from '@fontsource/outfit/files/outfit-latin-700-normal.woff2?url';
+import interFontVar from '@fontsource-variable/inter/files/inter-latin-standard-normal.woff2?url';
+
 const posts = await getCollection('posts');
 const searchIndex = posts.map((post) => ({
   id: post.id,
@@ -59,6 +64,9 @@ const gaScript = `
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="preload" href={outfitFont400} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={outfitFont700} as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href={interFontVar} as="font" type="font/woff2" crossorigin="anonymous" />
 
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
