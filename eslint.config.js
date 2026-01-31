@@ -1,48 +1,70 @@
-import eslintPluginAstro from 'eslint-plugin-astro';
-import eslintPluginSvelte from 'eslint-plugin-svelte';
-import tseslint from 'typescript-eslint';
-import svelteParser from 'svelte-eslint-parser';
+import js from '@eslint/js';
+import ts from 'typescript-eslint';
+import svelte from 'eslint-plugin-svelte';
+import astro from 'eslint-plugin-astro';
+import prettier from 'eslint-config-prettier';
 import unusedImports from 'eslint-plugin-unused-imports';
+import globals from 'globals';
+import svelteParser from 'svelte-eslint-parser';
+import tsParser from '@typescript-eslint/parser';
 
+/** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
-  // TypeScript files
-  ...tseslint.configs.recommended,
-
-  // Astro files
-  ...eslintPluginAstro.configs.recommended,
-
-  // Svelte files
-  ...eslintPluginSvelte.configs.recommended,
+  js.configs.recommended,
+  ...ts.configs.recommended,
+  ...svelte.configs['flat/recommended'],
+  ...astro.configs.recommended,
+  prettier,
+  {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+  },
   {
     files: ['**/*.svelte'],
     languageOptions: {
       parser: svelteParser,
       parserOptions: {
-        parser: tseslint.parser,
+        parser: ts.configs.base.languageOptions.parser,
+        extraFileExtensions: ['.svelte'],
       },
     },
   },
-
-  // Global ignores
   {
-    ignores: ['dist/', 'node_modules/', '.astro/', 'build/'],
+    files: ['**/*.astro'],
+    languageOptions: {
+      parser: astro.parser,
+      parserOptions: {
+        parser: tsParser,
+        extraFileExtensions: ['.astro'],
+      },
+    },
   },
-
-  // Custom rules
+  {
+    files: ['**/*.svelte.ts'],
+    languageOptions: {
+      parser: tsParser,
+    },
+  },
   {
     plugins: {
       'unused-imports': unusedImports,
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'error',
-      'unused-imports/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-        },
-      ],
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'off',
+      'svelte/no-at-html-tags': 'off',
     },
+  },
+  {
+    ignores: ['dist/', '.astro/', 'src/env.d.ts', 'tmp/'],
   },
 ];

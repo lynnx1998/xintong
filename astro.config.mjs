@@ -1,20 +1,94 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-
 import svelte from '@astrojs/svelte';
 import mdx from '@astrojs/mdx';
-
+import sitemap from '@astrojs/sitemap';
+import partytown from '@astrojs/partytown';
 import tailwindcss from '@tailwindcss/vite';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeExternalLinks from 'rehype-external-links';
+import remarkEmoji from 'remark-emoji';
+import {
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerNotationWordHighlight,
+} from '@shikijs/transformers';
+
+import { SITE } from './site/config';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [svelte(), mdx()],
+  site: SITE.website,
+  integrations: [
+    svelte(),
+    mdx(),
+    sitemap(),
+    partytown({
+      config: {
+        forward: ['dataLayer.push'],
+      },
+    }),
+  ],
+
+  markdown: {
+    shikiConfig: {
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark',
+      },
+      defaultColor: false,
+      wrap: false,
+      transformers: [
+        transformerNotationHighlight(),
+        transformerNotationWordHighlight(),
+        transformerNotationDiff(),
+      ],
+    },
+    remarkPlugins: [remarkEmoji],
+    rehypePlugins: [
+      rehypeSlug,
+      [
+        rehypeAutolinkHeadings,
+        {
+          behavior: 'prepend',
+          properties: {
+            className: ['heading-link'],
+            ariaLabel: 'Link to section',
+          },
+          content: {
+            type: 'text',
+            value: '#',
+          },
+        },
+      ],
+      [
+        rehypeExternalLinks,
+        {
+          target: '_blank',
+          rel: ['noopener', 'noreferrer'],
+        },
+      ],
+    ],
+  },
 
   image: {
-    service: { entrypoint: 'astro/assets/services/noop' }
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+    },
   },
 
   vite: {
-    plugins: [tailwindcss()]
-  }
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@/config': path.resolve(__dirname, './site/config.ts'),
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
+  },
 });

@@ -1,9 +1,8 @@
 ---
 title: 'Getting Started with Astro and Svelte'
 description: 'Learn how to build modern web applications with Astro and Svelte'
-pubDate: 2024-01-10
-author: 'Spaceship Author'
-tags: ['astro', 'svelte', 'tutorial']
+pubDate: 2025-01-20
+tags: ['Astro', 'Svelte', 'Tutorial', 'Web Development', 'JavaScript']
 ---
 
 # Getting Started with Astro and Svelte

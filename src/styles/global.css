@@ -1,1 +1,212 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* 1. Core Colors */
+  --color-background: #ffffff;
+  --color-foreground: #09090b;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #09090b;
+
+  --color-popover: #ffffff;
+  --color-popover-foreground: #09090b;
+
+  --color-primary: #18181b;
+  --color-primary-foreground: #fafafa;
+
+  --color-secondary: #f4f4f5;
+  --color-secondary-foreground: #18181b;
+
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #3f3f46;
+
+  --color-accent: #f4f4f5;
+  --color-accent-foreground: #18181b;
+
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #fafafa;
+
+  --color-border: #e4e4e7;
+  --color-input: #e4e4e7;
+  --color-ring: #18181b;
+
+  /* 2. Constants */
+  --font-sans: 'Outfit', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --radius-lg: 0.75rem;
+  --radius-md: calc(0.75rem - 2px);
+  --radius-sm: calc(0.75rem - 4px);
+
+  /* 3. Responsive Scaling (4K & Mobile Optimization) */
+  --breakpoint-3xl: 1920px;
+  --breakpoint-4xl: 2560px;
+}
+
+@layer base {
+  .dark {
+    --color-background: #09090b;
+    --color-foreground: #fafafa;
+    --color-card: #09090b;
+    --color-card-foreground: #fafafa;
+    --color-popover: #09090b;
+    --color-popover-foreground: #fafafa;
+    --color-primary: #fafafa;
+    --color-primary-foreground: #18181b;
+    --color-secondary: #27272a;
+    --color-secondary-foreground: #fafafa;
+    --color-muted: #27272a;
+    --color-muted-foreground: #a1a1aa;
+    --color-accent: #27272a;
+    --color-accent-foreground: #fafafa;
+    --color-destructive: #7f1d1d;
+    --color-destructive-foreground: #fafafa;
+    --color-border: #27272a;
+    --color-input: #27272a;
+    --color-ring: #d4d4d8;
+  }
+
+  /* Fluid Typography & Scaling */
+  html {
+    color-scheme: light;
+    /* Base font size scales between 14px on mobile and 18px on 4K */
+    font-size: clamp(14px, 0.8vw + 10px, 20px);
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  @media (min-width: 2560px) {
+    html {
+      font-size: 22px; /* Extra boost for 4K */
+    }
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  *::selection {
+    background-color: var(--color-primary) !important;
+    color: var(--color-primary-foreground) !important;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight font-black;
+    line-height: 1.1;
+  }
+
+  a {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  a:hover {
+    color: var(--color-primary);
+  }
+
+  input,
+  textarea,
+  select {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    border-color: var(--color-border);
+  }
+
+  input::placeholder {
+    color: var(--color-muted-foreground);
+    opacity: 0.5;
+  }
+}
+
+@layer utilities {
+  .text-main {
+    color: var(--color-foreground);
+  }
+  .text-muted {
+    color: var(--color-muted-foreground);
+  }
+  .bg-main {
+    background-color: var(--color-background);
+  }
+  .border-main {
+    border-color: var(--color-border);
+  }
+
+  .no-underline {
+    text-decoration: none !important;
+  }
+
+  /* Fluid Container Padding */
+  .container-padding {
+    @apply px-4 sm:px-6 lg:px-8 xl:px-12 3xl:px-24;
+  }
+}
+
+/* Typography Overrides */
+.prose {
+  --tw-prose-body: var(--color-foreground);
+  --tw-prose-headings: var(--color-foreground);
+  --tw-prose-links: var(--color-foreground);
+  --tw-prose-bold: var(--color-foreground);
+  --tw-prose-counters: var(--color-muted-foreground);
+  --tw-prose-bullets: var(--color-border);
+  --tw-prose-hr: var(--color-border);
+  --tw-prose-quotes: var(--color-foreground);
+  --tw-prose-quote-borders: var(--color-border);
+  --tw-prose-captions: var(--color-muted-foreground);
+  --tw-prose-code: var(--color-foreground);
+  --tw-prose-pre-code: #ffffff;
+  --tw-prose-pre-bg: #18181b;
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border);
+
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.dark .prose {
+  --tw-prose-pre-bg: #18181b;
+  --tw-prose-pre-code: #ffffff;
+  --tw-prose-links: var(--color-foreground);
+}
+
+/* Heading anchor links */
+.heading-link {
+  opacity: 0;
+  margin-left: -1.5rem;
+  padding-right: 0.5rem;
+  color: var(--color-muted-foreground);
+  text-decoration: none;
+  font-weight: 400;
+  transition: opacity 0.2s ease;
+}
+
+h1:hover .heading-link,
+h2:hover .heading-link,
+h3:hover .heading-link,
+h4:hover .heading-link,
+h5:hover .heading-link,
+h6:hover .heading-link {
+  opacity: 1;
+}
+
+.heading-link:hover {
+  color: var(--color-primary);
+}

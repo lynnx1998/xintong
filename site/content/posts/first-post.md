@@ -1,9 +1,8 @@
 ---
 title: 'First Blog Post'
 description: 'This is my first blog post using Astro content collections'
-pubDate: 2024-01-15
-author: 'Spaceship Author'
-tags: ['astro', 'blogging', 'markdown']
+pubDate: 2025-01-15
+tags: ['Astro', 'Markdown', 'Blogging', 'Getting Started']
 ---
 
 # Welcome to My Blog!

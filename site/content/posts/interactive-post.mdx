@@ -1,13 +1,14 @@
 ---
 title: 'Interactive Post with Svelte'
 description: 'A blog post demonstrating MDX with interactive Svelte components'
-pubDate: 2024-01-20
-author: 'Spaceship Author'
-tags: ['svelte', 'mdx', 'interactive']
+pubDate: 2026-01-20
+featured: true
+tags: ['MDX', 'Svelte', 'Interactive', 'Components', 'TypeScript']
 ---
 
 import Counter from '../_components/Counter.svelte';
 import GreetingInput from '../_components/GreetingInput.svelte';
+import Mermaid from '@/components/Mermaid.svelte';
 
 # Interactive Blogging with MDX and Svelte
 
@@ -24,6 +25,28 @@ Click the button below to see Svelte reactivity in action:
 Type your name to see a personalized greeting:
 
 <GreetingInput client:load />
+
+## Architecture Diagram :rocket:
+
+Here's how our component architecture works:
+
+<Mermaid
+  client:load
+  chart={`
+graph TD
+    A[MDX File] -->|Import| B[Svelte Components]
+    A -->|Write| C[Markdown Content]
+    B -->|Hydrate| D[Interactive UI]
+    C -->|Render| E[Static HTML]
+    D --> F[Final Page]
+    E --> F
+    F -->|Enhanced| G[User Experience]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style F fill:#bbf,stroke:#333,stroke-width:2px
+    style G fill:#bfb,stroke:#333,stroke-width:2px
+`}
+/>
 
 ## Why MDX with Svelte?
 
@@ -46,7 +69,7 @@ Here's the counter component code:
 <div class="my-6 p-6 border border-border rounded-lg bg-card">
   <p class="mb-4 text-lg">Current count: <strong>{count}</strong></p>
   <Button onclick={() => count++}>Increment Counter</Button>
-  <Button variant="outline" onclick={() => count = 0} class="ml-2">Reset</Button>
+  <Button variant="outline" onclick={() => (count = 0)} class="ml-2">Reset</Button>
 </div>
 ```
 
@@ -58,6 +81,7 @@ In MDX files, you can:
 - Import Svelte components
 - Use them with `client:load` directive for hydration
 - Mix static and interactive content
+- Create diagrams with Mermaid :fire:
 
 ## Conclusion
 

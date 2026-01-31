@@ -1,85 +1,108 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '@/layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import PostCard from '@/components/PostCard.svelte';
+import Breadcrumbs from '@/components/Breadcrumbs.svelte';
+import { getReadTime } from '@/lib/utils/readTime';
+import { SITE } from '@/config';
 
-const posts = await getCollection('posts');
-const sortedPosts = posts
-  .filter((post) => !post.data.draft)
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const posts = (await getCollection('posts')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
 
-// Extract all unique tags
-const allTags = Array.from(new Set(posts.flatMap((post) => post.data.tags || []))).sort();
+// Group posts by year
+const groupedPosts = posts.reduce(
+  (acc, post) => {
+    const year = post.data.pubDate.getFullYear().toString();
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(post);
+    return acc;
+  },
+  {} as Record<string, typeof posts>
+);
+
+const years = Object.keys(groupedPosts).sort((a, b) => b.localeCompare(a));
+
+// Get all tags with counts
+const tagCounts = posts.reduce(
+  (acc, post) => {
+    post.data.tags?.forEach((tag) => {
+      acc[tag] = (acc[tag] || 0) + 1;
+    });
+    return acc;
+  },
+  {} as Record<string, number>
+);
+
+// Sort tags by count (descending)
+const sortedTags = Object.entries(tagCounts)
+  .sort(([, a], [, b]) => b - a)
+  .slice(0, 20); // Top 20 tags
 ---
 
-<Layout title="Blog Posts" description="Browse all blog posts">
-  <h1 class="text-4xl font-bold mb-8">Blog Posts</h1>
+<Layout title="Blog">
+  <Breadcrumbs items={[{ name: 'Blog', href: '/posts' }]} />
 
-  {
-    allTags.length > 0 && (
-      <div class="mb-8">
-        <h2 class="text-lg font-semibold mb-4">Filter by tag:</h2>
-        <div class="flex flex-wrap gap-2">
-          {allTags.map((tag) => {
-            const count = posts.filter((p) => p.data.tags?.includes(tag)).length;
-            return (
-              <a
-                href={`/posts/tag/${tag}`}
-                class="px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80"
-              >
-                {tag} ({count})
-              </a>
-            );
-          })}
+  <div class="mb-10 sm:mb-12">
+    <h1
+      class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-foreground leading-[1.1]"
+    >
+      Writing
+    </h1>
+    <p class="mt-3 text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+      {SITE.blogDescription}
+    </p>
+  </div>
+
+  <div class="flex flex-col lg:flex-row gap-10 lg:gap-12">
+    <!-- Main Content: Posts -->
+    <div class="flex-1 min-w-0">
+      <div class="flex flex-col gap-12 lg:gap-14">
+        {
+          years.map((year) => (
+            <section class="flex flex-col gap-6">
+              <div class="flex items-center gap-6">
+                <h2 class="text-[11px] sm:text-xs font-black uppercase tracking-[0.25em] text-muted-foreground opacity-80 shrink-0">
+                  {year}
+                </h2>
+                <div class="h-px flex-1 bg-border opacity-60" />
+              </div>
+              <div class="flex flex-col gap-3 sm:gap-4">
+                {groupedPosts[year].map((post) => (
+                  <PostCard client:load {post} readTime={getReadTime(post.body || '')} />
+                ))}
+              </div>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Sidebar: Tags -->
+    <aside class="lg:w-64 flex-shrink-0">
+      <div class="lg:sticky lg:top-24">
+        <!-- Tags Cloud -->
+        <div class="p-5 rounded-xl bg-secondary/30 border border-border/50">
+          <h3 class="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+            Popular Topics
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            {
+              sortedTags.map(([tag, count]) => (
+                <a
+                  href={`/posts/tag/${tag}`}
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-background border border-border hover:bg-accent hover:border-primary/50 transition-all no-underline group"
+                >
+                  <span class="text-foreground group-hover:text-primary transition-colors">
+                    {tag}
+                  </span>
+                  <span class="text-muted-foreground text-[10px]">({count})</span>
+                </a>
+              ))
+            }
+          </div>
         </div>
       </div>
-    )
-  }
-
-  {
-    sortedPosts.length === 0 ? (
-      <p class="text-muted-foreground">No posts yet.</p>
-    ) : (
-      <div class="space-y-6">
-        {sortedPosts.map((post) => (
-          <article class="border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
-            <a href={`/posts/${post.slug}`} class="group">
-              <h2 class="text-2xl font-semibold mb-2 group-hover:text-primary transition-colors">
-                {post.data.title}
-              </h2>
-              {post.data.description && (
-                <p class="text-muted-foreground mb-3">{post.data.description}</p>
-              )}
-              <div class="flex items-center gap-4 text-sm text-muted-foreground">
-                <time datetime={post.data.pubDate.toISOString()}>
-                  {post.data.pubDate.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </time>
-                {post.data.author && <span>by {post.data.author}</span>}
-              </div>
-              {post.data.tags && post.data.tags.length > 0 && (
-                <div class="flex gap-2 mt-3">
-                  {post.data.tags.map((tag) => (
-                    <a
-                      href={`/posts/tag/${tag}`}
-                      class="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded hover:bg-secondary/80 transition-colors"
-                      onclick={(e: Event) => e.stopPropagation()}
-                    >
-                      {tag}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </a>
-          </article>
-        ))}
-      </div>
-    )
-  }
-
-  <div class="mt-8">
-    <a href="/" class="text-primary hover:underline">← Back to home</a>
+    </aside>
   </div>
 </Layout>

@@ -1,34 +1,130 @@
 ---
 import '@/styles/global.css';
 import { SITE } from '@/config';
-import Header from '@/lib/components/Header.astro';
-import Footer from '@/lib/components/Footer.astro';
+import Header from '@/components/Header.svelte';
+import Footer from '@/components/Footer.svelte';
+import SearchModal from '@/components/SearchModal.svelte';
+import { getCollection } from 'astro:content';
+import { ClientRouter } from 'astro:transitions';
+import JsonLd from '@/components/JsonLd.astro';
+import { getWebSiteSchema, getOrganizationSchema, getPersonSchema } from '@/lib/schemas';
+import LoadingIndicator from 'astro-loading-indicator/component';
+
+const posts = await getCollection('posts');
+const searchIndex = posts.map((post) => ({
+  id: post.id,
+  data: {
+    title: post.data.title,
+    description: post.data.description,
+  },
+}));
 
 interface Props {
   title?: string;
   description?: string;
+  ogImage?: string;
+  schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { title, description } = Astro.props;
+const { title, description, ogImage, schema } = Astro.props;
 const pageTitle = title ? `${title} | ${SITE.title}` : SITE.title;
 const pageDescription = description || SITE.desc;
+const pageOgImage = ogImage || SITE.ogImage;
+
+const defaultSchemas = [
+  getWebSiteSchema(new URL(Astro.url.pathname, Astro.site).toString()),
+  getOrganizationSchema(),
+  getPersonSchema(),
+];
+
+const finalSchema = schema
+  ? Array.isArray(schema)
+    ? [...defaultSchemas, ...schema]
+    : [...defaultSchemas, schema]
+  : defaultSchemas;
+
+const gaScript = `
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '${SITE.googleAnalyticsId}');
+`;
 ---
 
 <html lang={SITE.lang}>
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
+
+    <!-- SEO -->
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content={SITE.author} />
+    <meta name="theme-color" content="#18181b" />
+
+    <!-- RSS Feed -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.title} RSS Feed`}
+      href="/rss.xml"
+    />
+
+    <!-- Theme Initialization -->
+    <script is:inline>
+      (function () {
+        const getThemePreference = () => {
+          if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+            return localStorage.getItem('theme');
+          }
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        const setDarkClass = () => {
+          const isDark = getThemePreference() === 'dark';
+          document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+        };
+
+        setDarkClass();
+        document.addEventListener('astro:after-swap', setDarkClass);
+      })();
+    </script>
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={new URL(pageOgImage, Astro.url)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site)} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={new URL(pageOgImage, Astro.url)} />
+
+    {SITE.googleAnalyticsId && <script type="text/partytown" is:inline set:html={gaScript} />}
+
+    <JsonLd schema={finalSchema} />
+
+    <ClientRouter />
+    <LoadingIndicator color="hsl(var(--primary))" height="3px" threshold={300} />
     <base href={SITE.base} />
   </head>
-  <body class="max-w-5xl mx-auto">
-    <Header />
-    <main>
-      <slot />
-    </main>
-    <Footer />
+  <body class="bg-background text-foreground min-h-screen">
+    <div class="max-w-5xl 3xl:max-w-7xl mx-auto container-padding">
+      <Header client:load />
+      <main class="py-12 sm:py-16 lg:py-24">
+        <slot />
+      </main>
+      <Footer />
+      <SearchModal client:idle posts={searchIndex} />
+    </div>
   </body>
 </html>

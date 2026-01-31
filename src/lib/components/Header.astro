@@ -2,23 +2,12 @@
 import { SITE } from '@/config';
 ---
 
-<header class="my-1 items-center justify-between flex flex-row py-3">
-  <ul class="gap-3">
-    <li>
-      <a href="/">
-        <h1 class="text-xl uppercase">
-          {SITE.title}
-        </h1>
-      </a>
-    </li>
-  </ul>
-
-  <ul class="flex flex-row gap-3">
-    <li>
-      <a href="/posts">Blog</a>
-    </li>
-    <li>
-      <a href="/about">About</a>
-    </li>
-  </ul>
+<header class="flex items-center justify-between p-4">
+  <a href="/" class="text-2xl font-bold uppercase tracking-wider">
+    {SITE.title}
+  </a>
+  <nav class="flex gap-4">
+    <a href="/posts" class="hover:text-gray-400">Blog</a>
+    <a href="/about" class="hover:text-gray-400">About</a>
+  </nav>
 </header>
