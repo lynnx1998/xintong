@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2026-02-01
+
+### Performance
+
+- **Mobile Optimization (100/100)**: Resolved critical hydration bottlenecks on mobile devices.
+  - Converted `Header` from Svelte to Astro to eliminate 40kB+ of hydration payload.
+  - Removed `astro-loading-indicator` to fix a 31ms "Forced Reflow" penalty during initial paint.
+  - Optimized hydration strategy for `ThemeToggle` and `Search` using `client:idle`.
+
+### Changed
+
+- **Accessibility**: Improved contrast ratios for project type badges ("Open Source", "Social") in dark mode to meet WCAG AAA standards.
+
 ## [1.1.2] - 2026-02-01
 
 ### Performance
