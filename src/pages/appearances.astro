@@ -4,9 +4,21 @@ import { getCollection } from 'astro:content';
 import { formatDate } from '@/lib/utils/date';
 import Breadcrumbs from '@/components/Breadcrumbs.svelte';
 
-const appearances = (await getCollection('appearances')).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+import { getLangFlag } from '@/lib/utils/lang';
+
+const appearances = await getCollection('appearances');
+
+const appearancesByYear = appearances.reduce(
+  (acc, item) => {
+    const year = item.data.date.getFullYear().toString();
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(item);
+    return acc;
+  },
+  {} as Record<string, typeof appearances>
 );
+
+const sortedYears = Object.keys(appearancesByYear).sort((a, b) => Number(b) - Number(a));
 ---
 
 <Layout title="Appearances & Publications">
@@ -25,23 +37,16 @@ const appearances = (await getCollection('appearances')).sort(
 
   <div class="space-y-16">
     {
-      Object.entries(
-        appearances.reduce((acc, item) => {
-          const year = item.data.date.getFullYear();
-          if (!acc[year]) acc[year] = [];
-          acc[year].push(item);
-          return acc;
-        }, {})
-      )
-        .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
-        .map(([year, items]) => (
-          <section class="relative pl-8 sm:pl-0">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-8 sticky top-20 bg-background/95 backdrop-blur py-2 w-max rounded-r-lg lg:static lg:bg-transparent lg:mb-6">
-              {year}
-            </h2>
-            <div class="border-l border-border/50 space-y-8 pl-8 sm:pl-12 relative">
-              <div class="absolute top-0 bottom-0 left-0 w-px bg-gradient-to-b from-transparent via-border to-transparent hidden sm:block" />
-              {items.map((item) => {
+      sortedYears.map((year) => (
+        <section class="relative pl-8 sm:pl-0">
+          <h2 class="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-8 sticky top-20 bg-background/95 backdrop-blur py-2 w-max rounded-r-lg lg:static lg:bg-transparent lg:mb-6">
+            {year}
+          </h2>
+          <div class="border-l border-border/50 space-y-8 pl-8 sm:pl-12 relative">
+            <div class="absolute top-0 bottom-0 left-0 w-px bg-gradient-to-b from-transparent via-border to-transparent hidden sm:block" />
+            {appearancesByYear[year]
+              .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+              .map((item) => {
                 const mediaType = item.data.media || 'text';
                 const icon =
                   mediaType === 'video'
@@ -84,6 +89,22 @@ const appearances = (await getCollection('appearances')).sort(
                             </span>
                           </>
                         )}
+                        {item.data.lang && item.data.lang !== 'en' && (
+                          <>
+                            <span class="text-muted-foreground/40">•</span>
+                            <span
+                              class="inline-flex items-center gap-1 hover:text-foreground transition-colors cursor-help"
+                              title={`Language: ${item.data.lang}`}
+                            >
+                              <span class="text-base leading-none group-hover:scale-110 transition-all">
+                                {getLangFlag(item.data.lang)}
+                              </span>
+                              <span class="text-[10px] font-bold uppercase tracking-tighter opacity-70">
+                                {item.data.lang}
+                              </span>
+                            </span>
+                          </>
+                        )}
                       </div>
 
                       <h3 class="text-lg sm:text-xl font-bold leading-tight mb-2 group-hover:text-primary transition-colors">
@@ -105,11 +126,6 @@ const appearances = (await getCollection('appearances')).sort(
                         <span class="bg-secondary/50 px-2 py-1 rounded-md text-foreground">
                           {item.data.event}
                         </span>
-                        {item.data.language !== 'English' && (
-                          <span class="bg-secondary/50 px-2 py-1 rounded-md text-foreground">
-                            {item.data.language}
-                          </span>
-                        )}
                       </div>
                     </div>
 
@@ -140,9 +156,9 @@ const appearances = (await getCollection('appearances')).sort(
                   </article>
                 );
               })}
-            </div>
-          </section>
-        ))
+          </div>
+        </section>
+      ))
     }
   </div>
 </Layout>

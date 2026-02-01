@@ -17,10 +17,12 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  lang?: string;
   schema?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { title, description, ogImage, schema } = Astro.props;
+const { title, description, ogImage, lang, schema } = Astro.props;
+const pageLang = lang || SITE.lang;
 const pageTitle = title ? `${title} | ${SITE.title}` : SITE.title;
 const pageDescription = description || SITE.desc;
 const pageOgImage = new URL(ogImage || SITE.ogImage, Astro.site);
@@ -37,15 +39,26 @@ const finalSchema = schema
     : [...defaultSchemas, schema]
   : defaultSchemas;
 
+const analyticsId = SITE.googleAnalyticsId;
+const isGTM = analyticsId?.startsWith('GTM-');
+
+const gtmScript = `
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','${analyticsId}');
+`;
+
 const gaScript = `
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', '${SITE.googleAnalyticsId}');
+  gtag('config', '${analyticsId}');
 `;
 ---
 
-<html lang={SITE.lang}>
+<html lang={pageLang}>
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -115,7 +128,11 @@ const gaScript = `
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={pageOgImage} />
 
-    {SITE.googleAnalyticsId && <script type="text/partytown" is:inline set:html={gaScript} />}
+    {
+      analyticsId && (
+        <script type="text/partytown" is:inline set:html={isGTM ? gtmScript : gaScript} />
+      )
+    }
 
     <JsonLd schema={finalSchema} />
 
@@ -123,6 +140,18 @@ const gaScript = `
     <base href={SITE.base} />
   </head>
   <body class="bg-background text-foreground min-h-screen">
+    {
+      isGTM && (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${analyticsId}`}
+            height="0"
+            width="0"
+            style="display:none;visibility:hidden"
+          />
+        </noscript>
+      )
+    }
     <div class="max-w-5xl 3xl:max-w-7xl mx-auto container-padding">
       <Header />
       <main class="py-12 sm:py-16 lg:py-24">

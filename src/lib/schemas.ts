@@ -20,6 +20,7 @@ export function getBlogPostingSchema(data: {
   description: string;
   pubDate: Date;
   url: string;
+  lang?: string;
   image?: string;
   tags?: string[];
 }) {
@@ -45,7 +46,7 @@ export function getBlogPostingSchema(data: {
     url: data.url,
     image: data.image,
     keywords: data.tags?.join(', '),
-    inLanguage: SITE.lang,
+    inLanguage: data.lang || SITE.lang,
   };
 }
 

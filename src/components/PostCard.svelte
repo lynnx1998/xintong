@@ -1,5 +1,6 @@
 <script lang="ts">
   import { formatDate } from '@/lib/utils/date';
+  import { getLangFlag } from '@/lib/utils/lang';
 
   interface Props {
     post: {
@@ -12,6 +13,7 @@
         tags: string[];
         featured?: boolean;
         draft?: boolean;
+        lang?: string;
       };
     };
     readTime: string;
@@ -111,6 +113,17 @@
           <span class="hover:text-primary transition-colors cursor-pointer">#{tag}</span>
         {/each}
       </div>
+
+      {#if post.data.lang && post.data.lang !== 'en'}
+        <span class="hidden sm:inline text-border">•</span>
+        <div
+          class="flex items-center gap-1.5 transition-all cursor-help"
+          title={`Language: ${post.data.lang}`}
+        >
+          <span class="text-sm leading-none">{getLangFlag(post.data.lang)}</span>
+          <span class="text-[10px] opacity-70 uppercase">{post.data.lang}</span>
+        </div>
+      {/if}
     </div>
   </div>
 </article>

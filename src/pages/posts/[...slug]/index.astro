@@ -31,6 +31,7 @@ const schemas = [
     description: post.data.description,
     pubDate: post.data.pubDate,
     url: new URL(Astro.url.pathname, Astro.site).toString(),
+    lang: post.data.lang,
     image: new URL(`/og/${post.id}.png`, Astro.site).toString(),
     tags: post.data.tags,
   }),
@@ -44,6 +45,7 @@ const schemas = [
 <Layout
   title={post.data.title}
   description={post.data.description}
+  lang={post.data.lang}
   ogImage={`/og/${post.id}.png`}
   schema={schemas}
 >

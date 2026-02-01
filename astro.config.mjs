@@ -24,6 +24,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // https://astro.build/config
 export default defineConfig({
   site: SITE.website,
+  publicDir: 'site/public',
   integrations: [
     svelte(),
     mdx(),
@@ -90,6 +91,7 @@ export default defineConfig({
     resolve: {
       alias: {
         '@/config': path.resolve(__dirname, './site/config.ts'),
+        '@/site-assets': path.resolve(__dirname, './site/assets'),
         '@': path.resolve(__dirname, './src'),
       },
     },

@@ -15,6 +15,7 @@ const posts = defineCollection({
     canonicalURL: z.string().url().optional(),
     showCTA: z.boolean().default(true),
     showComments: z.boolean().default(true),
+    lang: z.string().default('en'),
     series: z
       .object({
         id: z.string(),
@@ -49,7 +50,7 @@ const appearances = defineCollection({
     media: z.enum(['video', 'audio', 'text']).optional(),
     link: z.string().url(),
     description: z.string().optional(),
-    language: z.string().default('English'),
+    lang: z.string().default('en'),
     duration: z.string().optional(),
   }),
 });
