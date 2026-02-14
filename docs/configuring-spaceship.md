@@ -11,9 +11,9 @@ export const SITE: SiteConfig = {
   author: 'Your Name',
   title: 'Your Blog Title',
   desc: 'Your blog description',
-  website: 'https://yourdomain.com',
+  website: 'https://lynnx1998.github.io',
   lang: 'en-US',
-  base: '/',
+  base: '/xintong',
   ogImage: 'og.png',
   // ...
 };
