@@ -56,7 +56,7 @@ export const SITE: SiteConfig = {
   title: 'Lynn — Portfolio',
   ogImage: 'og.png',
   lang: 'en-US',
-  base: '/xintong',  // ⚠️ 必须改成你的仓库名
+  base: '/xintong',  
   website: 'https://lynnx1998.github.io/xintong',
 
   social: {
