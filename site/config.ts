@@ -51,38 +51,39 @@ export interface SiteConfig {
 }
 
 export const SITE: SiteConfig = {
-  author: 'Astronaut',
-  desc: 'Developer and designer building premium web experiences.',
-  title: 'Spaceship',
+  author: 'Lynn',
+  desc: 'Creative developer exploring design, code and digital aesthetics.',
+  title: 'Lynn — Portfolio',
   ogImage: 'og.png',
   lang: 'en-US',
-  base: '/',
-  website: 'https://spaceship-one.vercel.app',
-  social: {
-    x: 'https://x.com/astronaut',
-    github: 'https://github.com/astronaut',
-    telegram: 'https://t.me/astronaut',
-    facebook: 'https://facebook.com/astronaut',
-  },
-  googleAnalyticsId: '', // Example: 'G-XXXXXXXXXX'
-  homeHeroDescription:
-    'Building premium web experiences with Astro, Svelte, and Tailwind. Focused on performance, aesthetics, and clean code. I am currently working on open-source tools and sharing my journey through writing.',
-  blogDescription: 'A collection of thoughts, tutorials, and general web discovery.',
-  projectsDescription: 'Things I’ve built that I’m proud of. Many of them are open-source.',
+  base: '/xintong',  // ⚠️ 必须改成你的仓库名
+  website: 'https://lynnx1998.github.io/xintong',
 
-  // Homepage post counts
+  social: {
+    github: 'https://github.com/lynnx1998',
+  },
+
+  googleAnalyticsId: '',
+
+  homeHeroDescription:
+    'I design and build clean, expressive digital experiences. Currently exploring creative coding and interactive storytelling.',
+
+  blogDescription:
+    'Notes on design, development and digital experiments.',
+
+  projectsDescription:
+    'Selected projects and creative explorations.',
+
   featuredPostsCount: 3,
   latestPostsCount: 3,
 
-  // Homepage projects
   homeProjects: {
     enabled: true,
     count: 4,
   },
 
-  // CTA (Call-to-Action) block for blog posts
   cta: {
-    enabled: true,
+    enabled: false,
     filePath: 'site/cta.md',
   },
 
@@ -91,19 +92,17 @@ export const SITE: SiteConfig = {
     filePath: 'site/hero.md',
   },
 
-  // Giscus comments configuration
-  // Get your configuration from https://giscus.app
   comments: {
-    enabled: false, // Set to true after filling in the IDs below
-    repo: 'alec-c4/spaceship', // Your GitHub repository
-    repoId: '', // Get from https://giscus.app - enter repo above and copy the value
-    category: 'General', // GitHub Discussions category name
-    categoryId: '', // Get from https://giscus.app - select category and copy the value
+    enabled: false,
+    repo: '',
+    repoId: '',
+    category: '',
+    categoryId: '',
     mapping: 'pathname',
     reactionsEnabled: true,
     emitMetadata: false,
     inputPosition: 'bottom',
-    theme: 'preferred_color_scheme', // Automatically matches your site theme
+    theme: 'preferred_color_scheme',
     lang: 'en',
   },
 };
